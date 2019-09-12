@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<?charles serialisation-version='2.0' ?>
+<rewriteSet-array>
+  <rewriteSet>
+    <active>true</active>
+    <name>console_intercept</name>
+    <hosts>
+      <locationPatterns>
+        <locationMatch>
+          <location>
+            <host>cdn.granify.com</host>
+            <path>/assets/javascript.js</path>
+            <query>*</query>
+          </location>
+          <enabled>true</enabled>
+        </locationMatch>
+      </locationPatterns>
+    </hosts>
+    <rules>
+      <rewriteRule>
+        <active>true</active>
+        <ruleType>7</ruleType>
+        <matchValue>([\s\S]*)</matchValue>
+        <matchHeaderRegex>false</matchHeaderRegex>
+        <matchValueRegex>true</matchValueRegex>
+        <matchRequest>true</matchRequest>
+        <matchResponse>true</matchResponse>
+        <newValue>import(&quot;https://intercept:1337/inject.js&quot;).then(_ =&gt; { $1 });</newValue>
+        <newHeaderRegex>false</newHeaderRegex>
+        <newValueRegex>false</newValueRegex>
+        <matchWholeValue>false</matchWholeValue>
+        <caseSensitive>false</caseSensitive>
+        <replaceType>1</replaceType>
+      </rewriteRule>
+    </rules>
+  </rewriteSet>
+</rewriteSet-array>
