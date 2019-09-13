@@ -98,7 +98,3 @@ class ConsoleInterceptor {
   }
 }
 const interceptor = new ConsoleInterceptor();
-
-if (window.Granify) {
-  Granify('setDebugLogging', true);
-}
