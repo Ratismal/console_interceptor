@@ -1,5 +1,17 @@
 class ConsoleInterceptor {
   constructor() {
+    if (!('toJSON' in Error.prototype))
+      Object.defineProperty(Error.prototype, 'toJSON', {
+        value: function () {
+          var alt = { _interceptClass: 'error' };
+
+          Object.getOwnPropertyNames(this).forEach(function (key) {
+            alt[key] = this[key];
+          }, this);
+
+          return alt;
+        }, configurable: true, writable: true
+      });
     this.backlog = [];
     this.funcs = {};
     this.socket = null;
@@ -27,7 +39,7 @@ class ConsoleInterceptor {
         this.funcs[funcName] = console[funcName];
         console[funcName] = (...args) => {
           this.funcs[funcName](...args);
-          this.backlog.push({ code: 'log', log: { type: funcName, args }, host: window.location.hostname, timestamp: Date.now() });
+          this.backlog.push({ code: 'log', log: { type: funcName, args }, host: window.location.hostname, href: window.location.href, timestamp: Date.now() });
           this.update();
         }
       }
@@ -61,10 +73,14 @@ class ConsoleInterceptor {
 
   wsMessage(message) {
     const msg = JSON.parse(message.data);
-    this.funcs.log('WS MESSAGE!!!', msg);
     switch (msg.code) {
       case 'eval': {
-        const res = eval(msg.content);
+        let res;
+        try {
+          res = eval(msg.content);
+        } catch (err) {
+          res = err;
+        }
         this.backlog.push({ code: 'eval_response', content: res });
         this.update();
         break;

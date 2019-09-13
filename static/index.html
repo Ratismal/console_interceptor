@@ -5,11 +5,18 @@
   <meta charset="UTF-8">
   <title>title</title>
   <script src="client.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 
 <body>
-  <h1>Console Interceptor</h1>
-  <p>Open content inspector.</p>
+  <main>
+    <h1>Console Interceptor</h1>
+    <p>Open content inspector to view logs from all active sessions.</p>
+    <p>To send a message to all sessions, type <code>send("code to evaluate here");</code>.</p>
+
+    <h2>Active Sessions</h2>
+    <div class='site-wrapper' id='sessions'></div>
+  </main>
 </body>
 
 </html>

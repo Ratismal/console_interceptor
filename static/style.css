@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: Roboto, sans-serif;
+}
+
+code {
+  font-family: 'Roboto Mono', monospace;
+  color: rgb(102, 0, 66);
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  border-radius: 2px;
+}
+
+.sessions {
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 2px;
+  background: rgb(20, 140, 196);
+  cursor: pointer;
+}
+.button:hover {
+  background: rgb(31, 160, 219);
+}
+
+.session {
+  display: flex;
+  flex-direction: column;
+}
+
+.session .title {
+  font-size: 1.1rem;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: row;
+}
+.session .title > * {
+  margin: 0 0.25rem;
+  align-self: baseline;
+}
+.session .title .id {
+}
+.session .title .href {
+}
+
+.logs {
+  display: flex;
+  flex-direction: column;
+  margin: 0 1rem;
+  height: 400px;
+  overflow-y: auto;
+  transition-duration: 0.5s;
+
+  background: rgba(0, 0, 0, 0.08);
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+  border-right: 2px solid rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0px 3px 5px 2px rgba(0,0,0,0.75); */
+}
+
+.log-input {
+  display: block;
+  margin: 0 1rem;
+}
+
+.logs.collapsed {
+  height: 0;
+  /* box-shadow: none; */
+}
+
+.logs .log {
+  font-family: 'Roboto Mono', monospace;
+  /* margin: 0.1rem 0; */
+  padding: 0.25rem;
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.logs .log > div {
+  margin-left: 20px;
+}
+.log * {
+  white-space: pre-wrap;
+}
+
+.log.error {
+  background-color: rgb(255, 191, 186);
+  color: rgb(135, 0, 0);
+}
+
+.log.warn {
+  background-color: rgb(255, 253, 186);
+}
+.log.eval_input > div {
+  opacity: 0.9;
+  position: relative;
+}
+.log.eval > div {
+  position: relative;
+}
+.log.eval_input > div::before {
+  content: '>';
+  position: absolute;
+  font-style: normal;
+  left: -15px;
+}
+.log.eval > div::before {
+  content: '<';
+  position: absolute;
+  font-style: normal;
+  left: -15px;
+}
