@@ -76,6 +76,7 @@ function injectId(ctx, message) {
     message.id = ctx.id;
     message.hip = hasteflake(ctx.id);
     message.origin = ctx.headers.origin;
+    message.mid = catflake.generate();
   }
   return message;
 }

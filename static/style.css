@@ -1,19 +1,92 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto&display=swap');
 
+:root {
+  --border-radius: 4px;
+
+  --background: white;
+  --text: black;
+  --background-2: rgba(0, 0, 0, 0.15);
+  --background-logs: rgba(0, 0, 0, 0.1);
+  --border: rgba(0, 0, 0, 0.1);
+
+  --background-error: rgb(255, 191, 186);
+  --text-error: rgb(135, 0, 0);
+  --background-warn: rgb(255, 253, 186);
+  --text-warn: var(--text);
+
+  --input-caret: rgb(51, 51, 155);
+
+  --text-string: rgb(192, 61, 29);
+  --text-number: rgb(47, 125, 173);
+  --text-undefined: rgb(122, 122, 122);
+}
+#app.dark {
+  --background: rgb(25, 25, 25);
+  --text: rgba(255, 255, 255, 0.9);
+  --background-2: rgba(255, 255, 255, 0.15);
+  --background-logs: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.2);
+
+  --background-error: rgb(59, 10, 6);
+  --text-error: rgb(247, 119, 119);
+  --background-warn: rgb(77, 74, 10);
+  --text-warn: rgb(224, 220, 131);
+
+  --input-caret: rgb(100, 100, 236);
+
+  --text-string: rgb(230, 96, 63);
+  --text-number: rgb(136, 106, 219);
+  --text-undefined: rgb(141, 141, 141);
+}
+
 * {
   box-sizing: border-box;
+  transition-duration: 0.1s;
 }
 
 html, body {
   font-family: Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#app {
+  background-color: var(--background);
+  color: var(--text);
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.content, .sticky {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+input, select, textarea {
+  background: var(--background-2);
+  color: var(--text);
+  border: none;
+  padding: 0.5rem;
+  display: block;
+  width: 100%;
+  border-radius: var(--border-radius);
+}
+
+option {
+  background: var(--background-2);
+  color: black;
 }
 
 code {
   font-family: 'Roboto Mono', monospace;
-  color: rgb(102, 0, 66);
-  background: rgba(0, 0, 0, 0.1);
+  color: var(--text);
+  background: var(--background-2);
   padding: 0.5rem;
-  border-radius: 2px;
+  border-radius: var(--border-radius);
 }
 
 .sessions {
@@ -27,17 +100,24 @@ code {
   box-shadow: none;
   color: white;
   padding: 0.5rem;
-  border-radius: 2px;
+  border-radius: var(--border-radius);
   background: rgb(20, 140, 196);
   cursor: pointer;
 }
 .button:hover {
   background: rgb(31, 160, 219);
 }
+.button.danger {
+  background: rgb(150, 12, 30);
+}
+.button.danger:hover {
+  background: rgb(175, 16, 37);
+}
 
 .session {
   display: flex;
   flex-direction: column;
+  margin: 0 1rem;
 }
 
 .session .title {
@@ -51,30 +131,89 @@ code {
   align-self: baseline;
 }
 .session .title .id {
+  opacity: 0.7;
+  font-style: italic;
 }
 .session .title .href {
+  flex: 1 0 auto;
+}
+
+.title .display-group {
+  flex: 1 0 auto;
 }
 
 .logs {
   display: flex;
   flex-direction: column;
-  margin: 0 1rem;
-  height: 400px;
   overflow-y: auto;
+}
+
+.logs::-webkit-scrollbar {
+  
+}
+
+.logs::-webkit-scrollbar-track {
+  background: var(--background-logs);
+}
+.logs::-webkit-scrollbar-thumb {
+  background: var(--background-2);
+  border: 1px solid var(--border);
+}
+
+.logs-wrapper {
+  display: grid;
+  flex-direction: column;
+  overflow: hidden;
+
+  background: var(--background-logs);
+  height: 400px;
   transition-duration: 0.5s;
 
-  background: rgba(0, 0, 0, 0.08);
-  border-left: 2px solid rgba(0, 0, 0, 0.1);
-  border-right: 2px solid rgba(0, 0, 0, 0.1);
-  /* box-shadow: 0px 3px 5px 2px rgba(0,0,0,0.75); */
+  border: 1px solid var(--border);
+  grid-template-rows: 1fr 30px;
 }
 
-.log-input {
+.button-group {
+  display: flex;
+}
+
+.button-group .button {
+  margin-left: 0.5rem;
+}
+
+.log-input-wrapper {
   display: block;
-  margin: 0 1rem;
+  flex: 1 0 auto;
+  position: relative;
+  font-size: 13px;
+  padding: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+.log-input {
+  margin-left: 20px;
+  position: relative;
+  font-size: 13px;
+  height: 100%;
+  width: 100%;
+}
+.log-input input {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--text);
+  display: block;
+  min-height: 15px;
+  background: none;
+  border: none;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+}
+.log-input input:focus {
+  outline: none;
 }
 
-.logs.collapsed {
+.collapsed .logs-wrapper {
   height: 0;
   /* box-shadow: none; */
 }
@@ -82,10 +221,11 @@ code {
 .logs .log {
   font-family: 'Roboto Mono', monospace;
   /* margin: 0.1rem 0; */
+  font-size: 13px;
   padding: 0.25rem;
   font-size: 0.8rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
 }
 .logs .log > div {
   margin-left: 20px;
@@ -95,12 +235,13 @@ code {
 }
 
 .log.error {
-  background-color: rgb(255, 191, 186);
-  color: rgb(135, 0, 0);
+  background-color: var(--background-error);
+  color: var(--text-error);
 }
 
 .log.warn {
-  background-color: rgb(255, 253, 186);
+  background-color: var(--background-warn);
+  color: var(--text-warn);
 }
 .log.eval_input > div {
   opacity: 0.9;
@@ -109,15 +250,66 @@ code {
 .log.eval > div {
   position: relative;
 }
-.log.eval_input > div::before {
-  content: '>';
+
+.log.eval_input > div::before, .log-input::before, .log.eval > div::before {
   position: absolute;
   font-style: normal;
   left: -15px;
+  font-weight: bold;
+}
+.log-input::before {
+  color: var(--input-caret);
+}
+
+.log.eval_input > div::before, .log-input::before {
+  content: '>';
+
 }
 .log.eval > div::before {
   content: '<';
-  position: absolute;
-  font-style: normal;
-  left: -15px;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: var(--background);
+  padding: 1rem 0;
+}
+.sticky h2 {
+  margin-top: 0;
+}
+
+.button-toolbar {
+  display: flex;
+}
+.button-toolbar .button {
+  margin: 0;
+  flex: 1 0 auto;
+  border-radius: 0;
+}
+.button-toolbar .button:first-child {
+  border-top-left-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+}
+.button-toolbar .button:last-child {
+  border-top-right-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+}
+
+.type-string {
+  color: var(--text-string);
+}
+
+.type-string::before, .type-string::after {
+  content: '"';
+  color: var(--text);
+}
+
+.type-number {
+  color: var(--text-number);
+}
+
+.type-undefined {
+  color: var(--text-undefined);
 }

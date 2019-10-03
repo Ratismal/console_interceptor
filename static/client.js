@@ -50,7 +50,7 @@
       if (msg.href) {
         site.origin = msg.href;
       }
-      this.updateSites();
+      // this.updateSites();
 
       switch (msg.code) {
         case 'log': {
@@ -63,7 +63,8 @@
             }
           }
           console[log.type](...log.args);
-          site.logs.push(log);
+          log.id = msg.mid;
+          // site.logs.push(log);
           this.addLog(site, log);
           break;
         }
@@ -76,86 +77,159 @@
             msg.content = err;
             type.push('error');
           }
-          this.addLog(site, {
-            type: type.join(' '), args: [msg.content]
-          });
+          let log = {
+            type: type.join(' '),
+            args: [msg.content],
+            id: msg.mid
+          };
+          console.log(log, msg);
+
+          this.addLog(site, log);
           break;
         }
         case 'close': {
           this.sites.splice(this.sites.indexOf(site), 1);
-          this.updateSites();
+          // this.updateSites();
           break;
         }
       }
     }
 
-    formatLog(log) {
-      for (let i = 0; i < log.args.length; i++) {
-        if (typeof log.args[i] === 'string')
-          log.args[i] = log.args[i].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        else if (log.args[i] instanceof Error) {
-          log.args[i] = log.args[i].stack;
-        } else
-          log.args[i] = JSON.stringify(log.args[i], null, 2).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    sanitizeArgs(args) {
+      let a = args.slice(0);
+      for (let i = 0; i < args.length; i++) {
+        let arg = a[i];
+        let out = { original: arg };
+        if (typeof arg === 'string') {
+          out.text = arg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          out.type = "string";
+        } else if (arg instanceof Error) {
+          out.text = arg.stack;
+          out.type = "error";
+        } else {
+          out.text = (JSON.stringify(arg, null, 2) + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          out.type = typeof arg;
+        }
+        a[i] = out;
       }
-      let format = log.args[0];
-      let args = log.args.slice(1);
-      let regex = /%([\S]*?)([a-z%])/ig;
-      let parts = format.split(/%[\S]*?[a-z%]/i);
-      let out = ['<span>'];
-      let result;
-      let i = 0;
-      while ((result = regex.exec(format)) !== null) {
-        out.push(parts.shift());
-        let mod = result[1];
-        let type = result[2];
-        let swap = result[0];
-        let arg = args.shift();
-        if (++i > 100) break;
+      return a;
+    }
 
-        if (arg !== undefined)
-          switch (type.toLowerCase()) {
-            case 's': {
-              swap = arg;
-              break;
-            }
-            case 'i':
-            case 'd': {
-              swap = parseInt(arg);
-              break;
-            }
-            case 'f': {
-              swap = parseFloat(arg);
-              break;
-            }
-            case 'o': {
-              swap = `<div class="obj">${arg}</div>`;
-              break;
-            }
-            case 'c': {
-              let a = arg
-              a = a.replace(/"/g, '\\"')
-              swap = `</span><span style="${a}">`;
-              break;
-            }
-            default: {
-              args.unshift(arg);
-              break;
+    formatEvalResponse(log) {
+
+    }
+
+    formatStyle(style, text = '') {
+      return `</span><span style="${style.replace(/"/g, '\\"')}">${text}`;
+    }
+
+    formatClass(style, text = '') {
+      return `<span class="${style.replace(/"/g, '\\"')}">${text}</span>`;
+    }
+
+    formatLog(log, minimal = false) {
+      let logArgs = this.sanitizeArgs(log.args);
+      let format = logArgs[0];
+      let args = logArgs.slice(1);
+      let out = [];
+      let stringifyStrings = false;
+      if (typeof format.original === 'string') {
+        let regex = /%([\S]*?)([a-z%])/ig;
+        let parts = format.text.split(/%[\S]*?[a-z%]/i);
+        let result;
+        let i = 0;
+        while ((result = regex.exec(format.text)) !== null) {
+          out.push(parts.shift());
+          let mod = result[1];
+          let type = result[2];
+          let swap = result[0];
+          let arg = args.shift();
+          if (++i > 100) break;
+
+          if (arg !== undefined) {
+            switch (type.toLowerCase()) {
+              case 's': {
+                swap = arg.text;
+                break;
+              }
+              case 'i':
+              case 'd': {
+                swap = parseInt(arg.text);
+                break;
+              }
+              case 'f': {
+                swap = parseFloat(arg.text);
+                break;
+              }
+              case 'o': {
+                if (minimal) swap = arg.text;
+                else
+                  swap = `<div class="obj">${arg.text}</div>`;
+                break;
+              }
+              case 'c': {
+                if (!minimal) {
+                  swap = this.formatStyle(arg.text);
+                }
+                break;
+              }
+              default: {
+                args.unshift(arg);
+                break;
+              }
             }
           }
-        out.push(swap);
+          out.push(swap);
+        }
+        out.push(...parts);
+      } else {
+        args = logArgs;
+        stringifyStrings = true;
       }
-      out.push(...parts);
-      return [out.join(''), ...args].join(' ');
+      out = [out.join('')];
+      if (!minimal && out[0] !== '') out[0] = `<span>${out[0]}</span>`;
+      if (out[0] === '') out = [];
+      for (const arg of args) {
+        if (minimal) out.push(arg.text);
+        else {
+          if (typeof arg.original === 'string') {
+            let str = arg.text;
+            if (stringifyStrings)
+              str = this.formatClass('type-string', arg.text);
+            out.push(str);
+          } else if (typeof arg.original === 'number' || typeof arg.original === 'boolean') {
+            out.push(this.formatClass('type-number', arg.text));
+          } else if (arg.original === undefined || arg.original === null) {
+            out.push(this.formatClass('type-undefined', arg.text));
+          } else {
+            out.push(arg.text);
+          }
+        }
+      }
+      return out.join(' ');
     }
 
     addLog(site, log) {
-      const el = document.createElement('div');
-      el.className = 'log ' + log.type;
-      let formatted = this.formatLog(log);
-      el.innerHTML = `<div>${formatted}</div>`;
-      site.elogs.appendChild(el);
-      site.elogs.scrollTop += site.elogs.scrollHeight;
+      site.input = '';
+      log.formatted = this.formatLog(log);
+      log.minimal = this.formatLog(log, true).toLowerCase();
+      site.logs.push(log);
+      while (site.logs.length > 500) site.logs.shift();
+      let el = document.querySelector(`#${site.hip} .logs`);
+      if (el) {
+        let csh = el.scrollHeight;
+        let cst = el.scrollTop;
+        setTimeout(function () {
+          if (csh - cst < 380)
+            el.scrollTop += el.scrollHeight;
+        }, 0);
+      }
+      // const el = document.createElement('div');
+      // el.className = 'log ' + log.type;
+      // let formatted = this.formatLog(log);
+      // el.innerHTML = `<div>${formatted}</div>`;
+      // site.elogs.appendChild(el);
+      // site.elogs.scrollTop += site.elogs.scrollHeight;
     }
 
     updateSites() {
@@ -186,19 +260,7 @@
           site.input.type = 'text';
           site.input.className = 'log-input';
           site.input.addEventListener('keydown', e => {
-            if (e.code === 'Enter') {
-              e.preventDefault();
-              this.addLog(site, {
-                type: 'eval_input',
-                args: [site.input.value]
-              });
-              this.socket.send(JSON.stringify({
-                code: 'eval',
-                target: site.id,
-                content: site.input.value
-              }));
-              site.input.value = '';
-            }
+
           });
           site.etitle.appendChild(site.ecoll);
           site.etitle.appendChild(site.eid);
@@ -222,5 +284,109 @@
       content: code
     }));
   }
+
+  var app = new Vue({
+    el: '#app',
+    data() {
+      let history = localStorage.getItem('history');
+      history = history ? JSON.parse(history) : history = [];
+      return {
+        receiver,
+        filter: '',
+        inputs: {},
+        mods: {},
+        theme: localStorage.getItem('theme') || 'light',
+        themes: ['Light', 'Dark'],
+        history
+      }
+    },
+    watch: {
+      theme(newValue) {
+        localStorage.setItem('theme', newValue);
+      },
+      history(newValue) {
+        localStorage.setItem('history', JSON.stringify(newValue));
+      },
+      filter() {
+        let els = this.$el.querySelectorAll('.logs');
+        setTimeout(function () {
+          for (const el of els) {
+            el.scrollTop += el.scrollHeight;
+          }
+        }, 1);
+      }
+    },
+    methods: {
+      selectTheme(theme) {
+        this.theme = theme.toLowerCase();
+      },
+      initMod(id) {
+        if (!this.mods[id])
+          Vue.set(this.mods, id, {
+            collapsed: false,
+            index: -1,
+            cachedInput: '',
+            input: ''
+          });
+      },
+      getClass(id) {
+        this.initMod(id);
+        return {
+          session: true,
+          collapsed: !!this.mods[id].collapsed
+        }
+      },
+      toggleSite(id) {
+        this.mods[id].collapsed = !this.mods[id].collapsed;
+      },
+      formatLog(log) {
+        return this.receiver.formatLog(log);
+      },
+      getLogs(site) {
+        let f = this.filter.toLowerCase().trim();
+        return site.logs.filter(l => l.minimal.includes(f));
+      },
+      confirmInput(site) {
+        let input = this.mods[site.id].input;
+        // add entry to beginning of history
+        this.history = this.history.filter(h => h !== input);
+        this.history.unshift(input);
+        if (input) {
+          this.receiver.addLog(site, {
+            type: 'eval_input',
+            args: [input],
+            id: Date.now()
+          });
+          this.receiver.socket.send(JSON.stringify({
+            code: 'eval',
+            target: site.id,
+            content: input
+          }));
+          this.mods[site.id].input = '';
+          this.mods[site.id].index = -1;
+        }
+      },
+      clearSite(site) {
+        site.logs = [];
+      },
+      removeSite(site) {
+        let sites = this.receiver.sites;
+        sites.splice(sites.indexOf(site), 1);
+      },
+      moveHistory(amount, id) {
+        let site = this.mods[id];
+        if (site.index === -1 && amount === 1) {
+          site.cachedInput = site.input;
+        }
+        site.index = Math.min(Math.max(site.index + amount, -1), this.history.length - 1);
+        console.log(site.index, this.history);
+        if (site.index === -1) {
+          site.input = site.cachedInput;
+        } else {
+          site.input = this.history[site.index];
+        }
+      }
+    }
+  })
 })();
 
