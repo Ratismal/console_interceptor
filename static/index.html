@@ -19,14 +19,18 @@
       <p>To send a message to all sessions, type <code>send("code to evaluate here");</code>.</p>
     </div>
     <div class='sticky'>
-      <h2>Active Sessions</h2>
-      <label>Filter:</label>
-      <input id="filter" v-model="filter"></div>
+      <div class='content'>
+        <h2>Active Sessions</h2>
+        <label>Filter:</label>
+        <input id="filter" v-model="filter"></div>
+      </div>
     </div>
-    <div class='site-wrapper' id='sessions'>
+    <transition-group class='site-wrapper' id='sessions' name="session" tag="div">
       <div v-for="site of receiver.sites" :key="site.id" :id="site.hip" :class='getClass(site.id)'>
         <div class='title'>
-          <span class='href'>{{site.origin}}</span>
+          <span class='href'>{{site.origin}}
+            <span class='closed' v-if="site.closed">- SESSION CLOSED</span>
+          </span>
           <span class='id'>{{site.hip}}</span>
           <div class='button-group'>
             <button class='button' @click.prevent="toggleSite(site.id)">Collapse</button>
@@ -51,7 +55,7 @@
             </div>
           </div>
         </div>
-      </div>
+    </transition-group>
   </main>
   <script src="client.js"></script>
 </body>

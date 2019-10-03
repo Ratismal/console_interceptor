@@ -57,11 +57,10 @@ html, body {
   color: var(--text);
   height: 100%;
   width: 100%;
-  overflow: auto;
-  padding: 1rem;
+  overflow-y: scroll;
 }
 
-.content, .sticky {
+.content {
   max-width: 800px;
   margin: 0 auto;
 }
@@ -89,9 +88,10 @@ code {
   border-radius: var(--border-radius);
 }
 
-.sessions {
+#sessions {
   display: flex;
   flex-direction: column;
+  padding: 1rem;
 }
 
 .button {
@@ -119,6 +119,12 @@ code {
   flex-direction: column;
   margin: 0 1rem;
 }
+.session:hover, .session.closed:hover {
+  opacity: 1;
+}
+.session.closed {
+  opacity: 0.6;
+}
 
 .session .title {
   font-size: 1.1rem;
@@ -145,17 +151,16 @@ code {
 .logs {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
-.logs::-webkit-scrollbar {
-  
+::-webkit-scrollbar {
+  background: var(--background-2);
 }
-
-.logs::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: var(--background-logs);
 }
-.logs::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: var(--background-2);
   border: 1px solid var(--border);
 }
@@ -275,6 +280,7 @@ code {
   width: 100%;
   background: var(--background);
   padding: 1rem 0;
+  z-index: 9999;
 }
 .sticky h2 {
   margin-top: 0;
@@ -312,4 +318,14 @@ code {
 
 .type-undefined {
   color: var(--text-undefined);
+}
+
+.session {
+  transition: all 0.5s;
+  height: 500px;
+  overflow: hidden;
+}
+.session-enter, .session-leave-to {
+  opacity: 0;
+  height: 0;
 }

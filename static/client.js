@@ -44,7 +44,7 @@
       const msg = JSON.parse(message.data);
       let site = this.sites.find(s => s.id === msg.id);
       if (!site && msg.id) {
-        site = { id: msg.id, origin: msg.origin, hip: msg.hip, logs: [] }
+        site = { id: msg.id, origin: msg.origin, hip: msg.hip, logs: [], closed: false }
         this.sites.push(site);
       }
       if (msg.href) {
@@ -88,7 +88,8 @@
           break;
         }
         case 'close': {
-          this.sites.splice(this.sites.indexOf(site), 1);
+          site.closed = true;
+          // this.sites.splice(this.sites.indexOf(site), 1);
           // this.updateSites();
           break;
         }
@@ -331,9 +332,11 @@
       },
       getClass(id) {
         this.initMod(id);
+        let site = this.receiver.sites.find(s => s.id === id);
         return {
           session: true,
-          collapsed: !!this.mods[id].collapsed
+          collapsed: !!this.mods[id].collapsed,
+          closed: !site || site.closed
         }
       },
       toggleSite(id) {
