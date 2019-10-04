@@ -44,7 +44,7 @@
   transition-duration: 0.1s;
 }
 
-html, body {
+html, body, #entry {
   font-family: Roboto, sans-serif;
   margin: 0;
   padding: 0;
@@ -328,4 +328,19 @@ code {
 .session-enter, .session-leave-to {
   opacity: 0;
   height: 0;
+}
+
+.object {
+  display: inline;
+}
+
+.object .icon {
+  font-family: monospace;
+  user-select: none;
+  cursor: pointer;
+}
+
+.object .preview {
+  user-select: none;
+  cursor: pointer;
 }

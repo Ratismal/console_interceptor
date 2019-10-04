@@ -4,60 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Console Interceptor</title>
-  <link rel="stylesheet" href="style.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
 
 <body>
-  <main id='app' :class='theme'>
-    <div class='content'>
-      <h1>Console Interceptor</h1>
-      <div class='button-toolbar'>
-        <button class='button' v-for="t of themes" @click.prevent="selectTheme(t)">{{t}} Theme</button>
-      </div>
-      <p>Open content inspector to view logs from all active sessions.</p>
-      <p>To send a message to all sessions, type <code>send("code to evaluate here");</code>.</p>
-    </div>
-    <div class='sticky'>
-      <div class='content'>
-        <h2>Active Sessions</h2>
-        <label>Filter:</label>
-        <input id="filter" v-model="filter"></div>
-      </div>
-    </div>
-    <transition-group class='site-wrapper' id='sessions' name="session" tag="div">
-      <div v-for="site of receiver.sites" :key="site.id" :id="site.hip" :class='getClass(site.id)'>
-        <div class='title'>
-          <span class='href'>{{site.origin}}
-            <span class='closed' v-if="site.closed">- SESSION CLOSED</span>
-          </span>
-          <span class='id'>{{site.hip}}</span>
-          <div class='button-group'>
-            <button class='button' @click.prevent="toggleSite(site.id)">Collapse</button>
-            <button class='button danger' @click.prevent="clearSite(site)">Clear</button>
-            <button class='button danger' @click.prevent="removeSite(site)">Remove</button>
-          </div>
-        </div>
-        <div class='logs-wrapper'>
-          <div class='logs'>
-            <div v-for="log of getLogs(site)" :class="'log ' + log.type" :key="log.id">
-              <div v-html="log.formatted"></div>
-            </div>
-          </div>
-          <div class='log-input-wrapper'>
-            <div class='log-input'>
-              <input type='text'
-                v-model="mods[site.id].input"
-                @keydown.up.exact.prevent="moveHistory(1, site.id)"
-                @keydown.down.exact.prevent="moveHistory(-1, site.id)"
-                @keydown.enter.exact.prevent="confirmInput(site)">
-            </div>
-            </div>
-          </div>
-        </div>
-    </transition-group>
-  </main>
-  <script src="client.js"></script>
+  <div id='entry'>
+    <application></application>
+  </div>
+
+  <script src="/js/client.js"></script>
 </body>
 
 </html>

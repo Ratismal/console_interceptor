@@ -3,6 +3,7 @@ const static = require('koa-static');
 const route = require('koa-route');
 const websockify = require('koa-websocket');
 const fs = require('fs');
+const path = require('path');
 const Catflake = require('catflake');
 
 const key = fs.readFileSync('cert/interceptLocal.key', { encoding: 'utf8' });
@@ -118,6 +119,37 @@ const heartbeat = setInterval(function () {
 }, 1000);
 
 app.use(static('static'));
+
+function find(text, start, end) {
+  const s = text.indexOf(start);
+  const e = text.lastIndexOf(end);
+  console.log(s, s + start.length, text[s], text[s + start.length]);
+  return {
+    start: s,
+    end: e + end.length,
+    content: text.substring(s + start.length, e),
+    removed: text.substring(0, s).concat(text.substring(e + end.length, text.length))
+  };
+}
+
+app.use(route.get('/assets/components/:name', (ctx, name) => {
+  if (name.endsWith('.mjs')) name = name.substring(0, name.length - 4);
+  console.log(name);
+  let file = fs.readFileSync(path.join(__dirname, 'components', name + '.vue'), { encoding: 'utf8' });
+  let html = find(file, '<template>', '</template>');
+  let script = find(html.removed, '<script>', '</script>');
+
+  let htmlContent = html.content.replace(/`/g, '\\`');
+  let jsContent = script.content.replace('export default {', 'export default { template,');
+
+  let output = `const template = \`${htmlContent}\`;
+
+${jsContent}`;
+
+  ctx.set('Content-Type', 'text/javascript');
+  ctx.status = 200;
+  ctx.body = output;
+}));
 
 
 const PORT = 1337;
