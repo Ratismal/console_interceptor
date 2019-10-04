@@ -123,7 +123,6 @@ app.use(static('static'));
 function find(text, start, end) {
   const s = text.indexOf(start);
   const e = text.lastIndexOf(end);
-  console.log(s, s + start.length, text[s], text[s + start.length]);
   return {
     start: s,
     end: e + end.length,
@@ -134,7 +133,6 @@ function find(text, start, end) {
 
 app.use(route.get('/assets/components/:name', (ctx, name) => {
   if (name.endsWith('.mjs')) name = name.substring(0, name.length - 4);
-  console.log(name);
   let file = fs.readFileSync(path.join(__dirname, 'components', name + '.vue'), { encoding: 'utf8' });
   let html = find(file, '<template>', '</template>');
   let script = find(html.removed, '<script>', '</script>');
