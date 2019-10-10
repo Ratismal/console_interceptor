@@ -19,6 +19,7 @@
       <input
         type="file"
         @change="previewFile"
+        multiple
       />
       <span>{{fileNotice}}</span>
     </div>
@@ -100,10 +101,11 @@ export default {
   methods: {
     async previewFile(e) {
       const file = e.target.files[0];
-      if (file) {
+      if (e.target.files.length > 0) {
         let formData = new FormData();
-        formData.append("file", file);
-        console.log(file);
+        for (const file of e.target.files) {
+          formData.append("file", file);
+        }
         await fetch("/upload", { method: "POST", body: formData });
         this.fileNotice = "File has been uploaded!";
         setTimeout(() => {

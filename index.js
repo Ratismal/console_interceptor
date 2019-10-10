@@ -183,10 +183,16 @@ function saveFile(name, value) {
 }
 
 
-router.post('/upload', upload.single('file'), (ctx, next) => {
-  console.log('WOW!', ctx.file);
-
-  saveFile(ctx.file.originalname, ctx.file.buffer);
+router.post('/upload', upload.fields([
+  {
+    name: 'file',
+    maxCount: 8
+  }
+]), (ctx, next) => {
+  console.log('WOW!', ctx.files);
+  for (const file of ctx.files.file) {
+    saveFile(file.originalname, file.buffer);
+  }
 
   ctx.status = 200;
 });
