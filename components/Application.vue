@@ -15,6 +15,12 @@
         To send a message to all sessions, type
         <code>send("code to evaluate here");</code>.
       </p>
+      <h2>File Upload</h2>Use this to send files from your phone to this computer:
+      <input
+        type="file"
+        @change="previewFile"
+      />
+      <span>{{fileNotice}}</span>
     </div>
     <div class="sticky">
       <div class="content">
@@ -70,7 +76,9 @@ export default {
       mods: {},
       theme: localStorage.getItem("theme") || "light",
       themes: ["Light", "Dark"],
-      history
+      history,
+      file: null,
+      fileNotice: ""
     };
   },
   watch: {
@@ -90,6 +98,20 @@ export default {
     }
   },
   methods: {
+    async previewFile(e) {
+      const file = e.target.files[0];
+      if (file) {
+        let formData = new FormData();
+        formData.append("file", file);
+        console.log(file);
+        await fetch("/upload", { method: "POST", body: formData });
+        this.fileNotice = "File has been uploaded!";
+        setTimeout(() => {
+          this.fileNotice = "";
+          e.target.value = "";
+        }, 2000);
+      }
+    },
     selectTheme(theme) {
       this.theme = theme.toLowerCase();
     },

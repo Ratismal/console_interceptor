@@ -42,7 +42,7 @@ export default class ConsoleReceiver {
   wsMessage(message) {
     const msg = JSON.parse(message.data);
     let site = this.sites.find(s => s.id === msg.id);
-    if (!site && msg.id) {
+    if (!site && msg.id && msg.hip) {
       site = { id: msg.id, origin: msg.origin, hip: msg.hip, logs: [], closed: false }
       this.sites.push(site);
     }

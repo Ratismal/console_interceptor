@@ -8,7 +8,7 @@
         :style="segment.style"
       >
         <template v-for="(part, j) in segment.parts">
-          <span :key="i + '_' + j" v-if="typeof part === 'string'">{{part}}</span>
+          <span :key="i + '_' + j" v-if="typeof part === 'string'" v-html="part"></span>
           <js-object :key="i + '_' + j" v-else-if="typeof part === 'object'" :obj="part" />
         </template>
       </span>

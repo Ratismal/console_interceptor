@@ -1,10 +1,14 @@
 const Koa = require('koa');
+const bodyParser = require('koa-bodyparser');
 const static = require('koa-static');
-const route = require('koa-route');
 const websockify = require('koa-websocket');
 const fs = require('fs');
 const path = require('path');
 const Catflake = require('catflake');
+const Router = require('@koa/router');
+const multer = require('@koa/multer');
+
+const upload = multer();
 
 const key = fs.readFileSync('cert/interceptLocal.key', { encoding: 'utf8' });
 const cert = fs.readFileSync('cert/interceptLocal.crt', { encoding: 'utf8' });
@@ -14,6 +18,8 @@ const catflake = new Catflake({ stringify: true });
 const app = websockify(new Koa(), {}, {
   key, cert
 });
+
+app.use(bodyParser());
 
 app.use(async (ctx, next) => {
   console.log('%s %s', ctx.method, ctx.url);
@@ -131,7 +137,10 @@ function find(text, start, end) {
   };
 }
 
-app.use(route.get('/assets/components/:name', (ctx, name) => {
+const router = new Router();
+
+router.get('/assets/components/:name', (ctx, next) => {
+  let name = ctx.params.name;
   if (name.endsWith('.mjs')) name = name.substring(0, name.length - 4);
   let file = fs.readFileSync(path.join(__dirname, 'components', name + '.vue'), { encoding: 'utf8' });
   let html = find(file, '<template>', '</template>');
@@ -147,7 +156,43 @@ ${jsContent}`;
   ctx.set('Content-Type', 'text/javascript');
   ctx.status = 200;
   ctx.body = output;
-}));
+})
+
+const FILE_DIR = path.join(__dirname, 'files');
+
+function formatName(name, i) {
+  let parts = name.split('.');
+  let ext = parts[parts.length - 1];
+  let base = parts.slice(0, parts.length - 1).join('.');
+  return `${base}_${i}${ext ? '.' + ext : ''}`;
+}
+
+function saveFile(name, value) {
+  const n = name.toLowerCase();
+  const files = fs.readdirSync(FILE_DIR).map(f => f.toLowerCase());
+  let i = 0;
+  if (files.includes(n)) {
+    let newName;
+    do {
+      i++;
+      newName = formatName(n, i);
+    } while (files.includes(newName));
+  }
+
+  fs.writeFileSync(path.join(__dirname, 'files', i === 0 ? name : formatName(name, i)), value);
+}
+
+
+router.post('/upload', upload.single('file'), (ctx, next) => {
+  console.log('WOW!', ctx.file);
+
+  saveFile(ctx.file.originalname, ctx.file.buffer);
+
+  ctx.status = 200;
+});
+
+app.use(router.routes());
+app.use(router.allowedMethods());
 
 
 const PORT = 1337;
