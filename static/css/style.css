@@ -322,7 +322,7 @@ code {
 
 .session {
   transition: all 0.5s;
-  height: 500px;
+  /* height: 500px; */
   overflow: hidden;
 }
 .session-enter, .session-leave-to {
