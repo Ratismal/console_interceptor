@@ -189,7 +189,6 @@ router.post('/upload', upload.fields([
     maxCount: 8
   }
 ]), (ctx, next) => {
-  console.log('WOW!', ctx.files);
   for (const file of ctx.files.file) {
     saveFile(file.originalname, file.buffer);
   }
