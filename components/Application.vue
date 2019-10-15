@@ -123,12 +123,17 @@ export default {
           collapsed: false,
           index: -1,
           cachedInput: "",
-          input: ""
+          input: "",
+          hasCollapsed: false
         });
     },
     getClass(id) {
       this.initMod(id);
       let site = this.receiver.sites.find(s => s.id === id);
+      if (site.closed && !this.mods[id].hasCollapsed) {
+        this.mods[id].hasCollapsed = true;
+        this.mods[id].collapsed = true;
+      }
       return {
         session: true,
         collapsed: !!this.mods[id].collapsed,
