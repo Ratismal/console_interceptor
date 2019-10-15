@@ -19,6 +19,9 @@
   --text-string: rgb(192, 61, 29);
   --text-number: rgb(47, 125, 173);
   --text-undefined: rgb(122, 122, 122);
+
+  --font-monospace: 'Roboto Mono', monospace;
+  --font: Roboto, sans-serif;
 }
 #app.dark {
   --background: rgb(25, 25, 25);
@@ -45,7 +48,7 @@
 }
 
 html, body, #entry {
-  font-family: Roboto, sans-serif;
+  font-family: var(--font);
   margin: 0;
   padding: 0;
   height: 100%;
@@ -81,7 +84,7 @@ option {
 }
 
 code {
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-monospace);
   color: var(--text);
   background: var(--background-2);
   padding: 0.5rem;
@@ -139,6 +142,7 @@ code {
 .session .title .id {
   opacity: 0.7;
   font-style: italic;
+  font-family: var(--font-monospace);
 }
 .session .title .href {
   flex: 1 0 auto;
@@ -202,7 +206,7 @@ code {
   width: 100%;
 }
 .log-input input {
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-monospace);
   color: var(--text);
   display: block;
   min-height: 15px;
@@ -224,7 +228,7 @@ code {
 }
 
 .logs .log {
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-monospace);
   /* margin: 0.1rem 0; */
   font-size: 13px;
   padding: 0.25rem;
@@ -335,7 +339,7 @@ code {
 }
 
 .object .icon {
-  font-family: monospace;
+  font-family: var(--font-monospace);
   user-select: none;
   cursor: pointer;
 }
