@@ -1,15 +1,44 @@
 {
   "name": "console_interceptor",
   "version": "1.0.1",
-  "description": "",
-  "main": "main.js",
+  "description": "A utility to intercept console for debugging on remote web applications.",
+  "main": "src/main.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "electron:build": "",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "electron:build": "electron-builder",
+    "electron:pack": "electron-builder --dir",
     "electron:start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "generateCerts:windows": "cd cert && genRoot.bat && genKey.bat"
+  },
+  "build": {
+    "appId": "ratismal.console_interceptor",
+    "extraFiles": [
+      {
+        "from": ".",
+        "to": ".",
+        "filter": [
+          "cert/**/*.bat",
+          "cert/**/*.md",
+          "cert/**/*.ext"
+        ]
+      },
+      {
+        "from": "src/resources",
+        "to": "resources",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "src/resources/static/icon/icon.ico"
+    }
   },
   "author": "",
   "license": "ISC",

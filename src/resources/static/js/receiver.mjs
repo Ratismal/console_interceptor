@@ -99,6 +99,9 @@ export default class ConsoleReceiver {
         // this.updateSites();
         break;
       }
+      case 'alert': {
+        alert(msg.message);
+      }
     }
   }
 
