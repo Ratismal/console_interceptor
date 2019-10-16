@@ -169,7 +169,6 @@ module.exports = class ConsoleInterceptor {
         if (hasUpdate) {
           console.log('sending update notice');
           this.broadcast([ctx], { code: 'update', update: hasUpdate });
-          this.broadcast([ctx], { code: 'alert', message: this.fileDir });
         }
         this.broadcast(this.sites, { code: 'open', id: ctx.id, origin: ctx.headers.origin, hip: hasteflake(ctx.id) });
       }
