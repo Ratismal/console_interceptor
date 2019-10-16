@@ -4,6 +4,8 @@ export default class ConsoleReceiver {
 
     this.int = setInterval(this.interval.bind(this), 1000);
     this.sites = [];
+
+    this.update = { version: null, href: null };
   }
 
   interval() {
@@ -84,6 +86,11 @@ export default class ConsoleReceiver {
         console.log(log, msg);
 
         this.addLog(site, log);
+        break;
+      }
+      case 'update': {
+        this.update.href = msg.update.href;
+        this.update.version = msg.update.version;
         break;
       }
       case 'close': {

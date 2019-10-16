@@ -1,11 +1,13 @@
 {
   "name": "console_interceptor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "electron:build": "",
+    "electron:start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "generateCerts:windows": "cd cert && genRoot.bat && genKey.bat"
   },
@@ -19,9 +21,12 @@
     "koa-bodyparser": "^4.2.1",
     "koa-static": "^5.0.0",
     "koa-websocket": "^6.0.0",
-    "multer": "^1.4.2"
+    "multer": "^1.4.2",
+    "snekfetch": "^4.0.4"
   },
   "devDependencies": {
+    "electron": "^6.0.12",
+    "electron-builder": "^21.2.0",
     "nodemon": "^1.19.3"
   }
 }

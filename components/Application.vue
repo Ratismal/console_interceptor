@@ -1,5 +1,9 @@
 <template>
   <main id="app" :class="theme">
+    <div class="update-banner" v-if="receiver.update.version">
+      <span class="title">A new update is available: {{receiver.update.version}}</span>
+      <a :href="receiver.update.href" target="_blank">{{receiver.update.href}}</a>
+    </div>
     <div class="content">
       <h1>Console Interceptor</h1>
       <div class="button-toolbar">

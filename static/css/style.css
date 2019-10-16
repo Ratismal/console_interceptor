@@ -9,6 +9,14 @@
   --background-logs: rgba(0, 0, 0, 0.1);
   --border: rgba(0, 0, 0, 0.1);
 
+  --primary-color: rgb(20, 140, 196);
+  --primary-color-hover: rgb(31, 160, 219);
+  --danger-color: rgb(150, 12, 30);
+  --danger-color-hover: rgb(175, 16, 37);;
+
+  --update-background: rgb(135, 61, 61);
+  --text-update: rgba(255, 255, 255, 0.9);
+
   --background-error: rgb(255, 191, 186);
   --text-error: rgb(135, 0, 0);
   --background-warn: rgb(255, 253, 186);
@@ -104,17 +112,17 @@ code {
   color: white;
   padding: 0.5rem;
   border-radius: var(--border-radius);
-  background: rgb(20, 140, 196);
+  background: var(--primary-color);
   cursor: pointer;
 }
 .button:hover {
-  background: rgb(31, 160, 219);
+  background: var(--primary-color-hover);
 }
 .button.danger {
-  background: rgb(150, 12, 30);
+  background: var(--danger-color);
 }
 .button.danger:hover {
-  background: rgb(175, 16, 37);
+  background: var(--danger-color-hover);
 }
 
 .session {
@@ -347,4 +355,28 @@ code {
 .object .preview {
   user-select: none;
   cursor: pointer;
+}
+
+.update-banner {
+  background: var(--update-background);
+  display: block;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-content: center;;
+  align-items: center;
+  padding: 1rem;
+}
+
+.update-banner .title {
+  font-size: 1.3rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--primary-color-hover);
 }
