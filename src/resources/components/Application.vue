@@ -107,7 +107,6 @@ export default {
       }, 1);
     },
     sitesLength(val, oldVal) {
-      console.log(val, oldVal);
       if (val > oldVal) {
         let main = document.querySelector("main");
         setTimeout(() => {
