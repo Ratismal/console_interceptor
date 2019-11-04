@@ -22,8 +22,6 @@ export default {
   props: {
     log: { type: Object }
   },
-  mounted() {
-    console.log(this.log);
-  }
+  mounted() {}
 };
 </script>

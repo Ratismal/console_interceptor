@@ -1,8 +1,8 @@
 <template>
   <div :class="className">
     <span @click.prevent="toggle" class="icon">▶</span>
-    <span class="preview" @click.prevent="toggle">{{preview}}</span>
-    <div class="rendered" v-if="expanded">{{obj}}</div>
+    <span class="preview js" @click.prevent="toggle" v-html="highlight('js', preview)"></span>
+    <div class="rendered json" v-if="expanded" v-html="highlight('json', obj)"></div>
   </div>
 </template>
 
@@ -10,12 +10,11 @@
 export default {
   template,
   data() {
-    console.log(this.obj);
     return {
       message: "hello world",
       expanded: false
       // expanded:
-      //   this.obj && JSON.stringify(this.obj, null, 2).split("\n").length <= 5
+      //   this.obj && JSON.stringify(this.obj, null, 2).split("\n").length <= 5,
     };
   },
   props: {
@@ -28,6 +27,10 @@ export default {
         expanded: this.expanded
       };
     },
+    // output() {
+    //   let json = JSON.stringify(this.obj, null, 2);
+    //   return hljs.highlight("json", json);
+    // },
     preview() {
       if (Array.isArray(this.obj)) {
         let out = [];
@@ -36,6 +39,8 @@ export default {
             out.push("[..]");
           } else if (typeof prop === "object" && prop !== null) {
             out.push("{..}");
+          } else if (typeof prop === "string") {
+            out.push('"' + prop.replace(/"/g, '\\"') + '"');
           } else {
             out.push(prop);
           }
@@ -43,17 +48,22 @@ export default {
         return `[ ${out.join(", ")} ]`;
       } else {
         let out = ["{"];
+        let sout = [];
         for (const key in this.obj) {
           let prop = this.obj[key];
-          out.push(key + ":");
+          let o = key + ": ";
           if (Array.isArray(prop)) {
-            out.push("[..]");
+            o += "[..]";
           } else if (typeof prop === "object" && prop !== null) {
-            out.push("{..}");
+            o += "{..}";
+          } else if (typeof prop === "string") {
+            o += '"' + prop.replace(/"/g, '\\"') + '"';
           } else {
-            out.push(prop);
+            o += prop;
           }
+          sout.push(o);
         }
+        out.push(sout.join(", "));
         out.push("}");
         return out.join(" ");
       }
@@ -62,6 +72,10 @@ export default {
   methods: {
     toggle() {
       this.expanded = !this.expanded;
+    },
+    highlight(type, text) {
+      if (typeof text !== "string") text = JSON.stringify(text, null, 2);
+      return hljs.highlight(type, text).value;
     }
   }
 };

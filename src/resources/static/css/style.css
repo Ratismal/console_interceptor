@@ -140,12 +140,18 @@ code {
 .session .title {
   font-size: 1.1rem;
   margin: 1rem 0;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  /* flex-direction: row; */
 }
 .session .title > * {
   margin: 0 0.25rem;
   align-self: baseline;
+}
+.session .title .href {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .session .title .id {
   opacity: 0.7;
@@ -183,7 +189,7 @@ code {
   overflow: hidden;
 
   background: var(--background-logs);
-  height: 400px;
+  height: 500px;
   transition-duration: 0.5s;
 
   border: 1px solid var(--border);

@@ -86,6 +86,11 @@ export default {
       fileNotice: ""
     };
   },
+  computed: {
+    sitesLength() {
+      return this.receiver.sites.length;
+    }
+  },
   watch: {
     theme(newValue) {
       localStorage.setItem("theme", newValue);
@@ -100,6 +105,15 @@ export default {
           el.scrollTop += el.scrollHeight;
         }
       }, 1);
+    },
+    sitesLength(val, oldVal) {
+      console.log(val, oldVal);
+      if (val > oldVal) {
+        let main = document.querySelector("main");
+        setTimeout(() => {
+          main.scrollTo(0, main.scrollHeight);
+        }, 100);
+      }
     }
   },
   methods: {
@@ -201,7 +215,6 @@ export default {
         Math.max(site.index + amount, -1),
         this.history.length - 1
       );
-      console.log(site.index, this.history);
       if (site.index === -1) {
         site.input = site.cachedInput;
       } else {

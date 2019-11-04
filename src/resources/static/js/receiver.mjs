@@ -63,7 +63,7 @@ export default class ConsoleReceiver {
             log.args[i] = err;
           }
         }
-        console[log.type](...log.args);
+        console[log.type](...JSON.parse(JSON.stringify(log.args)));
         log.id = msg.mid;
         // site.logs.push(log);
         this.addLog(site, log);
@@ -83,8 +83,6 @@ export default class ConsoleReceiver {
           args: [msg.content],
           id: msg.mid
         };
-        console.log(log, msg);
-
         this.addLog(site, log);
         break;
       }
