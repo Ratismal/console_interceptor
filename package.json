@@ -1,6 +1,6 @@
 {
   "name": "console_interceptor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A utility to intercept console for debugging on remote web applications.",
   "main": "src/main.js",
   "scripts": {
