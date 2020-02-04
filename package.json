@@ -1,6 +1,6 @@
 {
   "name": "console_interceptor",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A utility to intercept console for debugging on remote web applications.",
   "main": "src/main.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "electron:pack": "electron-builder --dir",
     "electron:start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generateCerts:windows": "cd cert && genRoot.bat && genKey.bat"
+    "generateCerts:windows": "cd cert && genRoot.bat && genKey.bat",
+    "transpile": "babel src/inject.js --out-file src/resources/static/inject.js"
   },
   "build": {
     "appId": "ratismal.console_interceptor",
@@ -54,6 +55,9 @@
     "snekfetch": "^4.0.4"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
     "electron": "^6.0.12",
     "electron-builder": "^21.2.0",
     "nodemon": "^1.19.3"
