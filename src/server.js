@@ -105,6 +105,7 @@ module.exports = class ConsoleInterceptor {
 
     this.key = fs.readFileSync(path.join(this.certDir, 'interceptLocal.key'), { encoding: 'utf8' });
     this.cert = fs.readFileSync(path.join(this.certDir, 'interceptLocal.crt'), { encoding: 'utf8' });
+    this.root = fs.readFileSync(path.join(this.certDir, 'rootCA.crt'), { encoding: 'utf8' });
 
     this.app = null;
     this.router = null;
@@ -178,6 +179,16 @@ module.exports = class ConsoleInterceptor {
       this.broadcast(this.sites, { code: 'heartbeat' });
       this.broadcast(this.clients, { code: 'heartbeat' });
     }, 1000);
+
+    app.use(async (ctx, next) => {
+      if (ctx.path === '/ssl') {
+        ctx.body = this.root;
+        ctx.status = 200;
+        ctx.set('Content-Type', 'application/x-x509-ca-cert');
+        ctx.set('Content-Disposition', 'filename=intercept-ssl-cert.pem');
+        return;
+      } else await next();
+    })
 
     app.use(koaStatic(path.join(this.resourceDir, 'static')));
 
